@@ -85,13 +85,13 @@ def draw(canvas):
     draw_paddle(canvas, paddle2_pos, GREEN)
     ball_movement()
 
-    myfont1 = pygame.font.SysFont("Comic Sans MS", 20)
-    label1 = myfont1.render("Score " + str(l_score), 1, (255, 255, 0))
-    canvas.blit(label1, (50, 20))
+    draw_scoreboard(canvas, l_score, 50, 20)
+    draw_scoreboard(canvas, r_score, 470, 20)
 
-    myfont2 = pygame.font.SysFont("Comic Sans MS", 20)
-    label2 = myfont2.render("Score " + str(r_score), 1, (255, 255, 0))
-    canvas.blit(label2, (470, 20))
+def draw_scoreboard(canvas, score, x, y):
+    myfont = pygame.font.SysFont("Comic Sans MS", 20)
+    label = myfont.render("Score " + str(score), 1, (255, 255, 0))
+    canvas.blit(label, (x, y))
 
 def draw_paddle(canvas, paddle_pos, color):
     pygame.draw.polygon(canvas, color, [[paddle_pos[0] - HALF_PAD_WIDTH, paddle_pos[1] - HALF_PAD_HEIGHT],
