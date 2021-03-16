@@ -147,26 +147,34 @@ def ball_movement():
 def keydown(event):
     global paddle1_vel, paddle2_vel
 
-    if event.key == K_UP:
-        paddle2_vel = -8
-    elif event.key == K_DOWN:
-        paddle2_vel = 8
-    elif event.key == K_w:
-        paddle1_vel = -8
-    elif event.key == K_s:
-        paddle1_vel = 8
+    temp_vel = keydown_helper(event, K_UP, K_DOWN)
+    if temp_vel != None:
+        paddle2_vel = temp_vel
+    temp_vel = keydown_helper(event, K_w, K_s)
+    if temp_vel != None:
+        paddle1_vel = temp_vel
 
+def keydown_helper(event, up, down):
+    if event.key == up:
+        return -8
+    elif event.key == down:
+        return 8
 
 # Key up
 #   reset velocities
 def keyup(event):
     global paddle1_vel, paddle2_vel
 
-    if event.key in (K_w, K_s):
-        paddle1_vel = 0
-    elif event.key in (K_UP, K_DOWN):
-        paddle2_vel = 0
+    temp_vel = keyup_helper(event, K_UP, K_DOWN)
+    if temp_vel != None:
+        paddle2_vel = temp_vel
+    temp_vel = keyup_helper(event, K_w, K_s)
+    if temp_vel != None:
+        paddle1_vel = temp_vel
 
+def keyup_helper(event, up, down):
+    if event.key in (up, down):
+        return 0
 
 # game loop
 
@@ -190,3 +198,4 @@ while True:
 
     pygame.display.update()
     fps.tick(60)
+    
