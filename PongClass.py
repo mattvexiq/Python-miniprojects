@@ -43,16 +43,16 @@ class paddle:
         self.paddle_pos = [width, height]
         self.color = color
 
-    def paddle_movement(self):
+    def paddle_movement(self, paddle_vel):
         if self.paddle_pos[1] > HALF_PAD_HEIGHT and self.paddle_pos[1] < HEIGHT - HALF_PAD_HEIGHT:
-            self.paddle_pos[1] += self.paddle_vel
-        elif self.paddle_pos[1] == HALF_PAD_HEIGHT and self.paddle_vel > 0:
-            self.paddle_pos[1] += self.paddle_vel
-        elif self.paddle_pos[1] == HEIGHT - HALF_PAD_HEIGHT and self.paddle_vel < 0:
-            self.paddle_pos[1] += self.paddle_vel
+            self.paddle_pos[1] += paddle_vel
+        elif self.paddle_pos[1] == HALF_PAD_HEIGHT and paddle_vel > 0:
+            self.paddle_pos[1] += paddle_vel
+        elif self.paddle_pos[1] == HEIGHT - HALF_PAD_HEIGHT and paddle_vel < 0:
+            self.paddle_pos[1] += paddle_vel
 
-    def draw_paddle(self):
-        pygame.draw.polygon(self.canvas, self.color, [[self.paddle_pos[0] - HALF_PAD_WIDTH, self.paddle_pos[1] - HALF_PAD_HEIGHT],
+    def draw_paddle(self, canvas):
+        pygame.draw.polygon(canvas, self.color, [[self.paddle_pos[0] - HALF_PAD_WIDTH, self.paddle_pos[1] - HALF_PAD_HEIGHT],
                                             [self.paddle_pos[0] - HALF_PAD_WIDTH, self.paddle_pos[1] + HALF_PAD_HEIGHT],
                                             [self.paddle_pos[0] + HALF_PAD_WIDTH, self.paddle_pos[1] + HALF_PAD_HEIGHT],
                                             [self.paddle_pos[0] + HALF_PAD_WIDTH, self.paddle_pos[1] - HALF_PAD_HEIGHT]], 0)
@@ -96,7 +96,10 @@ class ball:
             l_score += 1
             self.ball_init(False)
 
+    def draw_ball(self, canvas):
+        pygame.draw.circle(canvas, RED, self.ball_pos, 20, 0)
 
+#[1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
 
 def keydown(event):
     global paddle1_vel, paddle2_vel
@@ -130,7 +133,7 @@ def keyup_helper(event, up, down):
     if event.key in (up, down):
         return 0
 
-def draw(canvas):
+def draw(canvas, paddle1, paddle2):
     global l_score, r_score
 
     canvas.fill(BLACK)
@@ -139,13 +142,13 @@ def draw(canvas):
     pygame.draw.line(canvas, WHITE, [WIDTH - PAD_WIDTH, 0], [WIDTH - PAD_WIDTH, HEIGHT], 1)
     pygame.draw.circle(canvas, WHITE, [WIDTH // 2, HEIGHT // 2], 70, 1)
 
-    #paddle_movement(paddle1_pos, paddle1_vel)
-    #paddle_movement(paddle2_pos, paddle2_vel)
-
-    #pygame.draw.circle(canvas, RED, ball_pos, 20, 0)
-    #draw_paddle(canvas, paddle1_pos, RED)
-    #draw_paddle(canvas, paddle2_pos, GREEN)
-    #ball_movement()
+    paddle1.paddle_movement(paddle1_vel)
+    paddle2.paddle_movement(paddle2_vel)
+#continue
+    pygame.draw.circle(canvas, RED, ball_pos, 20, 0)
+    draw_paddle(canvas, paddle1_pos, RED)
+    draw_paddle(canvas, paddle2_pos, GREEN)
+    ball_movement()
 
     draw_scoreboard(canvas, l_score, 50, 20)
     draw_scoreboard(canvas, r_score, 470, 20)
@@ -158,7 +161,7 @@ def draw_scoreboard(canvas, score, x, y):
     canvas.blit(label, (x, y))
 
 
-init()
+#init()
 paddle1 = paddle(1, 1, 1, 1, 1)
 paddle2 = paddle(1, 1, 1, 1, 1)
 # game loop
