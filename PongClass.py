@@ -23,8 +23,8 @@ HALF_PAD_WIDTH = PAD_WIDTH // 2
 HALF_PAD_HEIGHT = PAD_HEIGHT // 2
 #ball_pos = [0, 0]
 #ball_vel = [0, 0]
-#paddle1_vel = 0
-#paddle2_vel = 0
+paddle1_vel = 0
+paddle2_vel = 0
 l_score = 0
 r_score = 0
 
@@ -35,11 +35,9 @@ pygame.display.set_caption('Hello World')
 
 class paddle:
     paddle_pos = []
-    def __init__(self, width, height, paddle_vel, canvas, color):
+    def __init__(self, width, height, color):
         self.width = width
         self.height = height
-        self.paddle_vel = paddle_vel
-        self.canvas = canvas
         self.paddle_pos = [width, height]
         self.color = color
 
@@ -66,7 +64,18 @@ class ball:
         self.ball_pos = ball_pos
         self.ball_vel = ball_vel
 
-    def ball_movement(self):
+    def ball_init(self, boolean):
+        #global ball_pos, ball_vel  # these are vectors stored as lists
+        self.ball_pos = [WIDTH // 2, HEIGHT // 2]
+        horz = random.randrange(2, 4)
+        vert = random.randrange(1, 3)
+
+        if boolean == False:
+            horz = - horz
+
+        self.ball_vel = [horz, -vert]
+
+    def ball_movement(self, paddle1, paddle2, r_score, l_score):
         self.ball_pos[0] += int(self.ball_vel[0])
         self.ball_pos[1] += int(self.ball_vel[1])
 
@@ -77,9 +86,7 @@ class ball:
             self.ball_vel[1] = - self.ball_vel[1]
 
         # ball collison check on gutters or paddles
-        if int(self.ball_pos[0]) <= BALL_RADIUS + PAD_WIDTH and int(self.ball_pos[1]) in range(self.paddle1_pos[1] - HALF_PAD_HEIGHT,
-                                                                                     self.paddle1_pos[1] + HALF_PAD_HEIGHT,
-                                                                                     1):
+        if int(self.ball_pos[0]) <= BALL_RADIUS + PAD_WIDTH and int(self.ball_pos[1]) in range(paddle1.paddle_pos[1] - HALF_PAD_HEIGHT,paddle1.paddle_pos[1] + HALF_PAD_HEIGHT,1):
             self.ball_vel[0] = -self.ball_vel[0]
             self.ball_vel[0] *= 1.1
             self.ball_vel[1] *= 1.1
@@ -87,8 +94,7 @@ class ball:
             r_score += 1
             self.ball_init(True)
 
-        if int(self.ball_pos[0]) >= WIDTH + 1 - BALL_RADIUS - PAD_WIDTH and int(self.ball_pos[1]) in range(
-                self.paddle2_pos[1] - HALF_PAD_HEIGHT, self.paddle2_pos[1] + HALF_PAD_HEIGHT, 1): # ALERT: CALLS PADDLE
+        if int(self.ball_pos[0]) >= WIDTH + 1 - BALL_RADIUS - PAD_WIDTH and int(self.ball_pos[1]) in range(paddle2.paddle_pos[1] - HALF_PAD_HEIGHT, paddle2.paddle_pos[1] + HALF_PAD_HEIGHT, 1): # ALERT: CALLS PADDLE
             self.ball_vel[0] = -self.ball_vel[0]
             self.ball_vel[0] *= 1.1
             self.ball_vel[1] *= 1.1
@@ -124,7 +130,7 @@ def keyup(event):
 
     temp_vel = keyup_helper(event, K_UP, K_DOWN)
     if temp_vel != None:
-        paddle2_vel = temp_vel
+        paddle1_vel = temp_vel
     temp_vel = keyup_helper(event, K_w, K_s)
     if temp_vel != None:
         paddle1_vel = temp_vel
@@ -133,7 +139,7 @@ def keyup_helper(event, up, down):
     if event.key in (up, down):
         return 0
 
-def draw(canvas, paddle1, paddle2):
+def draw(canvas, paddle1, paddle2, ball):
     global l_score, r_score
 
     canvas.fill(BLACK)
@@ -145,10 +151,10 @@ def draw(canvas, paddle1, paddle2):
     paddle1.paddle_movement(paddle1_vel)
     paddle2.paddle_movement(paddle2_vel)
 #continue
-    pygame.draw.circle(canvas, RED, ball_pos, 20, 0)
-    draw_paddle(canvas, paddle1_pos, RED)
-    draw_paddle(canvas, paddle2_pos, GREEN)
-    ball_movement()
+    ball.draw_ball(canvas)
+    paddle1.draw_paddle(canvas)
+    paddle2.draw_paddle(canvas)
+    ball.ball_movement(paddle1, paddle2, r_score, l_score)
 
     draw_scoreboard(canvas, l_score, 50, 20)
     draw_scoreboard(canvas, r_score, 470, 20)
@@ -162,12 +168,13 @@ def draw_scoreboard(canvas, score, x, y):
 
 
 #init()
-paddle1 = paddle(1, 1, 1, 1, 1)
-paddle2 = paddle(1, 1, 1, 1, 1)
+paddle1 = paddle(HALF_PAD_WIDTH - 1, HEIGHT // 2, RED)
+paddle2 = paddle(WIDTH + 1 - HALF_PAD_WIDTH, HEIGHT // 2, GREEN)
+ball1 = ball([0, 0], [0, 0])
 # game loop
 while True:
 
-    draw(window)
+    draw(window, paddle1, paddle2, ball1)
 
     for event in pygame.event.get():
 
