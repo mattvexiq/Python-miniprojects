@@ -91,7 +91,13 @@ class ball:
             self.ball_vel[0] *= 1.1
             self.ball_vel[1] *= 1.1
         elif int(self.ball_pos[0]) <= BALL_RADIUS + PAD_WIDTH:
+            print("int(self.ball_pos[0]): ", int(self.ball_pos[0]))
+            print("BALL_RADIUS + PAD_WIDTH", BALL_RADIUS + PAD_WIDTH)
+            print("BALL_RADIUS AND PAD_WIDTH: ", BALL_RADIUS, "     ", PAD_WIDTH)
+            #print("r_score should add here.")
+            #print("before r_score: ", r_score)
             r_score += 1
+            #print("after r_score: ", r_score)
             self.ball_init(True)
 
         if int(self.ball_pos[0]) >= WIDTH + 1 - BALL_RADIUS - PAD_WIDTH and int(self.ball_pos[1]) in range(paddle2.paddle_pos[1] - HALF_PAD_HEIGHT, paddle2.paddle_pos[1] + HALF_PAD_HEIGHT, 1): # ALERT: CALLS PADDLE
@@ -99,8 +105,12 @@ class ball:
             self.ball_vel[0] *= 1.1
             self.ball_vel[1] *= 1.1
         elif int(self.ball_pos[0]) >= WIDTH + 1 - BALL_RADIUS - PAD_WIDTH:
+            #print("l_score should add here.")
+            #print("before l_score: ", r_score)
             l_score += 1
+            #print("after l_score: ", r_score)
             self.ball_init(False)
+        return l_score, r_score
 
     def draw_ball(self, canvas):
         pygame.draw.circle(canvas, RED, self.ball_pos, 20, 0)
@@ -130,7 +140,7 @@ def keyup(event):
 
     temp_vel = keyup_helper(event, K_UP, K_DOWN)
     if temp_vel != None:
-        paddle1_vel = temp_vel
+        paddle2_vel = temp_vel
     temp_vel = keyup_helper(event, K_w, K_s)
     if temp_vel != None:
         paddle1_vel = temp_vel
@@ -145,7 +155,7 @@ def draw(canvas, paddle1, paddle2, ball):
     canvas.fill(BLACK)
     pygame.draw.line(canvas, WHITE, [WIDTH // 2, 0], [WIDTH // 2, HEIGHT], 1)
     pygame.draw.line(canvas, WHITE, [PAD_WIDTH, 0], [PAD_WIDTH, HEIGHT], 1)
-    pygame.draw.line(canvas, WHITE, [WIDTH - PAD_WIDTH, 0], [WIDTH - PAD_WIDTH, HEIGHT], 1)
+    pygame.draw.line(canvas, WHITE, [WIDTH - PAD_WIDTH, 0], [WIDTH - PAD_WIDTH, HEIGHT], 1) 
     pygame.draw.circle(canvas, WHITE, [WIDTH // 2, HEIGHT // 2], 70, 1)
 
     paddle1.paddle_movement(paddle1_vel)
@@ -154,8 +164,8 @@ def draw(canvas, paddle1, paddle2, ball):
     ball.draw_ball(canvas)
     paddle1.draw_paddle(canvas)
     paddle2.draw_paddle(canvas)
-    ball.ball_movement(paddle1, paddle2, r_score, l_score)
-
+    #print("r_score: ", r_score, "    l_score: ", l_score)
+    l_score, r_score = ball.ball_movement(paddle1, paddle2, r_score, l_score)
     draw_scoreboard(canvas, l_score, 50, 20)
     draw_scoreboard(canvas, r_score, 470, 20)
 
