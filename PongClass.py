@@ -60,8 +60,8 @@ class paddle:
 
 
 class ball:
-    def __init__(self, ball_pos, ball_vel):
-        self.ball_pos = ball_pos
+    def __init__(self, ball_vel):
+        self.ball_pos = [WIDTH // 2, HEIGHT // 2]
         self.ball_vel = ball_vel
 
     def ball_init(self, boolean):
@@ -84,22 +84,14 @@ class ball:
             self.ball_vel[1] = - self.ball_vel[1]
         if int(self.ball_pos[1]) >= HEIGHT + 1 - BALL_RADIUS:
             self.ball_vel[1] = - self.ball_vel[1]
-
         # ball collison check on gutters or paddles
         if int(self.ball_pos[0]) <= BALL_RADIUS + PAD_WIDTH and int(self.ball_pos[1]) in range(paddle1.paddle_pos[1] - HALF_PAD_HEIGHT,paddle1.paddle_pos[1] + HALF_PAD_HEIGHT,1):
             self.ball_vel[0] = -self.ball_vel[0]
             self.ball_vel[0] *= 1.1
             self.ball_vel[1] *= 1.1
         elif int(self.ball_pos[0]) <= BALL_RADIUS + PAD_WIDTH:
-            print("int(self.ball_pos[0]): ", int(self.ball_pos[0]))
-            print("BALL_RADIUS + PAD_WIDTH", BALL_RADIUS + PAD_WIDTH)
-            print("BALL_RADIUS AND PAD_WIDTH: ", BALL_RADIUS, "     ", PAD_WIDTH)
-            #print("r_score should add here.")
-            #print("before r_score: ", r_score)
             r_score += 1
-            #print("after r_score: ", r_score)
             self.ball_init(True)
-
         if int(self.ball_pos[0]) >= WIDTH + 1 - BALL_RADIUS - PAD_WIDTH and int(self.ball_pos[1]) in range(paddle2.paddle_pos[1] - HALF_PAD_HEIGHT, paddle2.paddle_pos[1] + HALF_PAD_HEIGHT, 1): # ALERT: CALLS PADDLE
             self.ball_vel[0] = -self.ball_vel[0]
             self.ball_vel[0] *= 1.1
@@ -165,7 +157,9 @@ def draw(canvas, paddle1, paddle2, ball):
     paddle1.draw_paddle(canvas)
     paddle2.draw_paddle(canvas)
     #print("r_score: ", r_score, "    l_score: ", l_score)
+
     l_score, r_score = ball.ball_movement(paddle1, paddle2, r_score, l_score)
+
     draw_scoreboard(canvas, l_score, 50, 20)
     draw_scoreboard(canvas, r_score, 470, 20)
 
@@ -180,14 +174,15 @@ def draw_scoreboard(canvas, score, x, y):
 #init()
 paddle1 = paddle(HALF_PAD_WIDTH - 1, HEIGHT // 2, RED)
 paddle2 = paddle(WIDTH + 1 - HALF_PAD_WIDTH, HEIGHT // 2, GREEN)
-ball1 = ball([0, 0], [0, 0])
+horz = random.randrange(2, 4)
+vert = random.randrange(1, 3)
+ball1 = ball([horz, -vert])
 # game loop
 while True:
 
     draw(window, paddle1, paddle2, ball1)
 
     for event in pygame.event.get():
-
         if event.type == KEYDOWN:
             keydown(event)
         elif event.type == KEYUP:
